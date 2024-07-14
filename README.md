@@ -1,0 +1,96 @@
+//Apex Trigger
+trigger Account_Mirror on Account (after insert, after update) {
+
+    if (Trigger.isAfter && Trigger.isInsert) {
+        AccountMirrorHandler.AccountMirrorInsert(Trigger.new);
+    }
+    if (Trigger.isAfter && Trigger.isUpdate) {
+        AccountMirrorHandler.AccountMirrorUpdate(Trigger.new);
+    }
+}
+
+//Apex class
+public with sharing class AccountMirrorHandler {
+    public static void AccountMirrorInsert(List<Account> newAccount) {
+
+        List<Account_Mirror__c> account_Mirror = new List<Account_Mirror__c>();
+        
+        for (Account account: newAccount) {
+            
+            Account_Mirror__c accMirror = new Account_Mirror__c();
+            accMirror.Name = account.Name;
+            accMirror.AccountName__c = account.Name;
+            accMirror.AccountNumber__c = account.AccountNumber;
+            accMirror.Email__c = account.Email__c;
+            accMirror.AccountRevenue__c = account.AnnualRevenue;
+            accMirror.Industry__c = account.Industry;
+            accmirror.Phone__c = account.Phone;
+            accMirror.Rating__c = account.Rating;
+            accMirror.Type__c = account.Type;
+            accMirror.Description__c = account.Description;
+            accMirror.Website__c = account.Website;
+            accMirror.AccountId__c = account.Id;
+            account_Mirror.add(accMirror);
+        }
+        
+        if (!account_Mirror.isEmpty()) {
+            insert account_Mirror;
+        }
+
+    }
+
+    public static void AccountMirrorUpdate(List<Account> oldAccount) {
+
+        for (Account account: oldAccount) {
+            
+            List<Account_Mirror__c> acc_Mirror_Update = new List<Account_Mirror__c>();
+            List<Account_Mirror__c> acc_Mirror_Insert = new List<Account_Mirror__c>();
+            
+            for (Account_Mirror__c account_Mirror: [SELECT Id,AccountId__c FROM Account_Mirror__c WHERE AccountId__c = :account.Id]) {
+                
+                if  (account_Mirror.AccountId__c == account.Id) {
+                    Account_Mirror__c accMirror = new Account_Mirror__c();
+                    accMirror.Id = account_Mirror.Id;
+                    accMirror.Name = account.Name;
+                    accMirror.AccountName__c = account.Name;
+                    accMirror.AccountNumber__c = account.AccountNumber;
+                    accMirror.Email__c = account.Email__c;
+                    accMirror.AccountRevenue__c = account.AnnualRevenue;
+                    accMirror.Industry__c = account.Industry;
+                    accmirror.Phone__c = account.Phone;
+                    accMirror.Rating__c = account.Rating;
+                    accMirror.Type__c = account.Type;
+                    accMirror.Description__c = account.Description;
+                    accMirror.Website__c = account.Website;
+                    accMirror.AccountId__c = account.Id;
+                    acc_Mirror_Update.add(accMirror);
+                }
+            }
+            
+            if (!acc_Mirror_Update.isEmpty()) {
+                Account_Mirror__c accMirror = new Account_Mirror__c();
+                accMirror.Name = account.Name;
+                accMirror.AccountName__c = account.Name;
+                accMirror.AccountNumber__c = account.AccountNumber;
+                accMirror.Email__c = account.Email__c;
+                accMirror.AccountRevenue__c = account.AnnualRevenue;
+                accMirror.Industry__c = account.Industry;
+                accmirror.Phone__c = account.Phone;
+                accMirror.Rating__c = account.Rating;
+                accMirror.Type__c = account.Type;
+                accMirror.Description__c = account.Description;
+                accMirror.Website__c = account.Website;
+                accMirror.AccountId__c = account.Id;
+                acc_Mirror_Insert.add(accMirror);
+            }
+            
+            if (!acc_Mirror_Update.isEmpty()) {
+                Update acc_Mirror_Update;
+            }
+            if (!acc_Mirror_Insert.isEmpty()) {
+                Insert acc_Mirror_Insert;
+            }
+        }
+
+    }
+}
